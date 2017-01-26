@@ -1,0 +1,6 @@
+Health Potion
+-health_regen="25"
+Banana
+-health_regen="10"
+Elixir of Life
+-health_regen="75"

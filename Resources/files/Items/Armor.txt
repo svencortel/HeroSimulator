@@ -1,0 +1,15 @@
+/HEAD/
+Clown Mask
+-resistance="5"
+/CHEST/
+Brofist T-shirt
+-resistance="10"
+/HANDS/
+Trashy Gloves
+-resistance="10"
+/LEGS/
+Zara Jeans
+-resistance="5"
+/FEET/
+Zara Shoes
+-resistance="5"
