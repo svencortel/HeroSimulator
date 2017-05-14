@@ -4,6 +4,8 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.Random;
 import java.util.stream.Stream;
+import java.util.List;
+import java.util.ArrayList;
 
 public final class ResourceManager
 {
@@ -29,8 +31,8 @@ public final class ResourceManager
 
 	public static Potion getPotion(int i) throws IOException
 	{
-		Path path = Paths.get(".").getParent();
-		path = Paths.get(path.toUri().toString(), "Resources", "files", "Items", "Potion.txt");
+		Path path = Paths.get("../Resources/files/Items/Potion.txt");
+		//path = Paths.get(path.toUri().toString(), "Resources", "files", "Items", "Potion.txt");
 
 		long lineCount = 0;
 
@@ -38,68 +40,41 @@ public final class ResourceManager
 		{
 			lineCount = stream.count();
 		}
+		catch(IOException e)
+		{
+			System.out.println(e);
+		}
 
 		int actual_index = (int)(i % lineCount);
 		int reminder_index = actual_index+1;
 
-		int[] stats = new int[3];
+		int[] stats = new int[]{0, 0, 0};
 
 		List<String> lines = Files.readAllLines(path);
 
-		while(lines[actual_index].substring(0,1).equals("-"))
+		if(lines.get(actual_index).substring(0,1).equals("-"))
 		{
-			String buff_name = lines[actual_index].substring(1,lines[actual_index].indexOf('='));
-			switch(buff_name)
-			{
-				case "health_regen": stats[1] = Integer.parseInt(lines[actual_index].
-					substring(lines[actual_index].indexOf('='),lines[actual_index].length()));
-									break;
-				case "resistance": stats[2] = Integer.parseInt(lines[actual_index].
-					substring(lines[actual_index].indexOf('='),lines[actual_index].length()));
-									break;
-				default: System.out.println("wtf: "+buff_name+", "+actual_index);
-						break;
-			}
-			actual_index--;
+			actual_index --;
 		}
+		String potion_name = lines.get(actual_index);
+		actual_index ++;
 
-		String potion_name = lines[actual_index];
-		actual_index = reminder_index;
-
-		while(lines[actual_index].substring(0,1).equals("-"))
+		
+		String buff_name = lines.get(actual_index).substring(1,lines.get(actual_index).indexOf('='));
+		switch(buff_name)
 		{
-			String buff_name = lines[actual_index].substring(1,lines[actual_index].indexOf('='));
-			switch(buff_name)
-			{
-				case "health_regen": stats[1] = Integer.parseInt(lines[actual_index].
-					substring(lines[actual_index].indexOf('='),lines[actual_index].length()));
-									break;
-				case "resistance": stats[2] = Integer.parseInt(lines[actual_index].
-					substring(lines[actual_index].indexOf('='),lines[actual_index].length()));
-									break;
-				default: System.out.println("wtf: "+buff_name+", "+actual_index);
-						break;
-			}
-			actual_index++;
+			case "health_regen": stats[1] = Integer.parseInt(lines.get(actual_index).
+				substring(lines.get(actual_index).indexOf('=')+2,lines.get(actual_index).length()-1));
+								break;
+			case "resistance": stats[2] = Integer.parseInt(lines.get(actual_index).
+				substring(lines.get(actual_index).indexOf('=')+2,lines.get(actual_index).length()-1));
+								break;
+			default: System.out.println("wtf: "+buff_name+", "+actual_index);
+					break;
 		}
+	
 
 		return new Potion(potion_name, stats);
-
-		/*
-		File dir = new File(".");
-		File potions_file = new File(dir.getParentFile().getCanonicalPath() +
-									 File.separator + "Resources" + File.separator +
-									 "files" + File.separator + "Items" + 
-									 File.separator + "Potion.txt");
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(potions_file)));
-
-		String line = null;
-		while((line = br.readLine()) != null || i<0)
-		{
-
-		}
-		*/
 		
 	}
 
@@ -110,14 +85,68 @@ public final class ResourceManager
 
 	public static Armor getArmor(int i) throws IOException
 	{
-		/*
-		File dir = new File(".");
-		File armors_file = new File(dir.getParentFile().getCanonicalPath() +
-									 File.separator + "Resources" + File.separator +
-									 "files" + File.separator + "Items" + 
-									 File.separator + "Armor.txt");
-		*/
-		return null;
+		Path path = Paths.get("../Resources/files/Items/Armor.txt");
+		//path = Paths.get(path.toUri().toString(), "Resources", "files", "Items", "Potion.txt");
+
+		long lineCount = 0;
+
+		try(Stream<String> stream = Files.lines(path))
+		{
+			lineCount = stream.count();
+		}
+		catch(IOException e)
+		{
+			System.out.println(e);
+		}
+
+		int actual_index = (int)(i % lineCount);
+		int reminder_index = actual_index+1;
+
+		int[] stats = new int[]{0, 0, 0};
+		byte armor_type = 0;
+
+		List<String> lines = Files.readAllLines(path);
+
+		if(lines.get(actual_index).substring(0,1).equals("-"))
+		{
+			actual_index --;
+		}
+		else if(lines.get(actual_index).substring(0,1).equals("/"))
+		{
+			actual_index ++;
+		}
+
+		String armor_name = lines.get(actual_index);
+		actual_index ++;
+		
+		String buff_name = lines.get(actual_index).substring(1,lines.get(actual_index).indexOf('='));
+		switch(buff_name)
+		{
+			case "health_regen": stats[1] = Integer.parseInt(lines.get(actual_index).
+				substring(lines.get(actual_index).indexOf('=')+2,lines.get(actual_index).length()-1));
+								break;
+			case "resistance": stats[2] = Integer.parseInt(lines.get(actual_index).
+				substring(lines.get(actual_index).indexOf('=')+2,lines.get(actual_index).length()-1));
+								break;
+			default: System.out.println("wtf: "+buff_name+", "+actual_index);
+					break;
+		}
+
+		while(!lines.get(actual_index).substring(0,1).equals("/"))
+			actual_index --;
+
+		switch(lines.get(actual_index))
+		{
+			case "/HEAD/": armor_type = Item.ARMOR_HEAD; break;
+			case "/CHEST/": armor_type = Item.ARMOR_CHEST; break;
+			case "/HANDS/": armor_type = Item.ARMOR_HANDS; break;
+			case "/LEGS/": armor_type = Item.ARMOR_LEGS; break;
+			case "/FEET/": armor_type = Item.ARMOR_FEET; break;
+			default: System.out.println("wtf: "+lines.get(actual_index)+", "+actual_index);
+					break;
+		}
+
+		return new Armor(armor_name, armor_type, stats);
 
 	}
 

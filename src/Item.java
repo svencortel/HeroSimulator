@@ -42,4 +42,28 @@ public class Item
 	{
 		return new int[]{health_plus, health_regen, resistance};
 	}
+
+	public String toString()
+	{
+		return name + ":\nHP regen\t" + health_regen + 
+		"\nResistance\t" + resistance;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(final Object obj)
+	{
+
+		if(obj instanceof Item)
+		{
+			Item otherItem = (Item)obj;
+			return this.name.equals(otherItem.getName());
+		}
+		return false;
+	}
 }
